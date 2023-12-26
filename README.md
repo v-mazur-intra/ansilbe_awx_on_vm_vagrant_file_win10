@@ -19,16 +19,19 @@ KIND preferred via low resources consumptions and ingress options (direct access
 Alternative cluster engines:
 
 1) minikube:
+
+REFs:
+
+https://ansible.readthedocs.io/projects/awx-operator/en/latest/installation/creating-a-minikube-cluster-for-testing.html
+
+https://chrisjhart.com/TLDR-AWX-Minikube-Ubuntu-2204/ 
+
 higher resources consumption via default "double virtualization" = Docker in VM;
 
 with config "driver=none (example "minikube start --addons=ingress,metrics-server --driver=none  --container-runtime="container.io") - very complex config especially "in rootless mode"
 
 and also minikube has only embedded ingress (not fully cuntomizable)
 
-REFs:
-
-https://ansible.readthedocs.io/projects/awx-operator/en/latest/installation/creating-a-minikube-cluster-for-testing.html
-https://chrisjhart.com/TLDR-AWX-Minikube-Ubuntu-2204/ 
 
 2) k3s:
 
@@ -43,6 +46,7 @@ ADDIT INFO:
 
 installed K9s - perfect tool for control cluster
 
+
 Vagrantfile language = Ruby; so convert TABs into spaces (i.e. Notepad++: Edit - Blank operations - TAB to Space)
 !!! A YAML file cannot contain tabs as indentation 
 
@@ -52,7 +56,9 @@ REF: https://yaml.org/faq.html
 
 
 ENV: win10, vagrant, virtualbox, oracle linux 8
+
 VM: 2 LAN:
+
 * NAT Internet;
 
 * direct access static IP 192.168.33.10
