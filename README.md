@@ -81,10 +81,6 @@ REF: https://yum.oracle.com/boxes/
 # `vagrantup.com` for more information on using Vagrant.
 ```
 EDIT Vagrantfile
+and replace default content of **Vagrantfile** with text of latest ver of _Vagrantfile_ from [repo](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10))
 
-i.e. `notepad Vagrantfile`
-
-replace default content of **Vagrantfile** with content
-
-https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/blob/main/Vagrantfile
 
