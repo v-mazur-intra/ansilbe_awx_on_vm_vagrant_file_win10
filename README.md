@@ -84,5 +84,7 @@ EDIT Vagrantfile
 
 i.e. `notepad Vagrantfile`
 
-replace default content of **Vagrantfile** with content https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/blob/main/Vagrantfile
+replace default content of **Vagrantfile** with content
+
+https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/blob/main/Vagrantfile
 
