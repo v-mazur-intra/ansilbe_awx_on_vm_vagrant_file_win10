@@ -23,9 +23,9 @@ Vagrant.configure("2") do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
-###ADD:
-  config.vm.network "forwarded_port", guest: 80, host: 80, host_ip: "127.0.0.1"
-  config.vm.network "forwarded_port", guest: 443, host: 443, host_ip: "127.0.0.1"
+###ADD: not required via access via bridged second LAN
+  # config.vm.network "forwarded_port", guest: 80, host: 80, host_ip: "127.0.0.1"
+  # config.vm.network "forwarded_port", guest: 443, host: 443, host_ip: "127.0.0.1"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-###UNCOMMENT:
+###UNCOMMENT: second bridged LAN
   config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
@@ -53,7 +53,7 @@ Vagrant.configure("2") do |config|
   # by making sure your Vagrantfile isn't accessable to the vagrant box.
   # If you use this you may want to enable additional shared subfolders as
   # shown above.
-###COMMENT:
+###COMMENTED for better performance and isolation 
   # config.vm.synced_folder ".", "/vagrant", disabled: true
 
   # Provider-specific configuration so you can fine-tune various
@@ -75,9 +75,9 @@ Vagrant.configure("2") do |config|
   ## Customize the amount of memory and cpu on the VM:
     #vb.memory = 6144 #minimum 
     ## optimum 8192
-    vb.memory = 8192
+    vb.memory = 4096
     # vb.cpus = 2 #minimum
-    vb.cpus = 3
+    vb.cpus = 2
     ## optimum 4
     vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
     ## REF: https://github.com/hashicorp/vagrant/issues/11726
@@ -107,6 +107,7 @@ Vagrant.configure("2") do |config|
   # swapon -s  
   config.vm.provision "shell", inline: "swapoff -a; free -h",
     run: "always"
+  # for provisioning at every boot
   $script = <<-SCRIPT
     sudo dnf -y update
     sudo dnf -y install oracle-epel-release-el8
@@ -124,7 +125,7 @@ Vagrant.configure("2") do |config|
     sudo nmcli conn modify "System eth0" ipv4.ignore-auto-dns yes
     sudo nmcli conn modify "System eth0" ipv4.dns  "8.8.8.8,1.1.1.1"
     sudo systemctl restart NetworkManager
-    sleep 5
+    sleep 3
     cat /etc/resolv.conf
   ## Docker:
   ## ADDIT REFs:
@@ -138,15 +139,14 @@ Vagrant.configure("2") do |config|
     #usermod -aG docker vagrant
     #newgrp docker # to activate the changes to groups (without sudo !!!)
     #newgrp - docker # to activate the changes to groups (without sudo !!!)
-    sudo groups $USER
-    id
+    #sudo groups $USER
+    #id
     sudo systemctl start docker.service
     sudo systemctl enable docker.service
     sudo systemctl enable containerd.service
   SCRIPT
   config.vm.provision "shell", inline: $script, privileged: false
-  ## FOR REINITIALIZE SHELL SESSION 
-  ## REBOOT - required;
+  ## REBOOT - required for reinitialise shell with new groups and env
   ## without "reboot" does not work docker rootless container)
   ## REF: https://docs.docker.com/engine/install/linux-postinstall/ 
   ## "newgrp docker" does not work
@@ -154,17 +154,17 @@ Vagrant.configure("2") do |config|
   echo "rebooting!"
   SHELL
   $script2 = <<-SCRIPT
-    ## OPTIONAL CHECK:
-    echo "script2"
+    free -h
     sudo systemctl status docker.service
+    # OPTIONAL CHECKS:
     docker --version
-    docker run hello-world
-    docker ps -a
-    docker stop $(docker ps -a -q)   # stop all containers
-    docker rm $(docker ps -a -q)     # remove all containers
-    docker image list
-    # docker image inspect hello-world:latest
-    docker image rm hello-world:latest
+    #docker run hello-world
+    #docker ps -a
+    #docker stop $(docker ps -a -q)   # stop all containers
+    #docker rm $(docker ps -a -q)     # remove all containers
+    #docker image list
+    ##docker image inspect hello-world:latest
+    #docker image rm hello-world:latest
     ## KIND:
     ## REF: https://kind.sigs.k8s.io/docs/user/quick-start#installing-from-release-binaries
     ## install:
@@ -206,9 +206,6 @@ Vagrant.configure("2") do |config|
     # https://kubernetes.io/docs/concepts/services-networking/ingress/
     # https://kk-shichao.medium.com/expose-service-using-nginx-ingress-in-kind-cluster-from-wsl2-14492e153e99
     # https://dustinspecker.com/posts/test-ingress-in-kind/
-    #  
-    # !!! A YAML file cannot contain tabs as indentation # REF https://stackoverflow.com/a/19976827
-    # REF: https://yaml.org/faq.html 
     cat <<-EOF > config.yaml
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
@@ -216,8 +213,8 @@ networking:
   # WARNING: It is _strongly_ recommended that you keep this the default
   # (127.0.0.1) for security reasons. However it is possible to change this.
   apiServerAddress: "192.168.33.10"
-  ## CHANGED FOR DIRECT ACCESS to API of CLUSTER
-  ## - i.e. manage cluster via LENS (https://k8slens.dev/) or Kubernetic Desktop (non free! https://www.kubernetic.com/) from Windows
+  ## CHANGED FOR DIRECT ACCESS to API of CLUSTER from host win10
+  ## via LENS (https://k8slens.dev/) or Kubernetic Desktop (Trial https://www.kubernetic.com/) from Windows
   # By default the API server listens on a random open port.
   # You may choose a specific port but probably don't need to in most cases.
   # Using a random port makes it easier to spin up multiple clusters.
@@ -254,7 +251,7 @@ EOF
     ## echo "This config may be used to connect to cluster with LENS or Kubernetic"
     ##
     ## deploy metrics server for CPU amd RAM consumption monitoring (i.e. "kubectl top nodes" or k9s)
-    ## neeed patch (metric-server container, you need to add argument  --kubelet-insecure-tls)
+    ## need patch (metric-server container, you need to add argument  --kubelet-insecure-tls)
     ## REF:
     ## https://gist.github.com/sanketsudake/a089e691286bf2189bfedf295222bd43
     mkdir metrics-server
@@ -276,7 +273,6 @@ EOF
     kubectl apply -k metrics-server/
     ## WAIT for metrics-server become ready
     kubectl wait --namespace kube-system --for=condition=ready pod --selector=k8s-app=metrics-server --timeout=180s
-    # wait for metrics-server ready
     sleep 60
     # check metrics-server working
     kubectl top nodes
@@ -289,6 +285,7 @@ EOF
     ## REFs:
     ## https://ansible.readthedocs.io/projects/awx-operator/en/latest/installation/basic-install.html
     ## https://chrisjhart.com/TLDR-AWX-Minikube-Ubuntu-2204/
+    ## DEPLOY AWX OPERATOR:
     mkdir awx
     # Create kustomization file
     cat <<EOF > awx/kustomization.yaml
@@ -305,12 +302,11 @@ images:
 # Specify a custom namespace in which to install AWX
 namespace: awx
 EOF
-    ## DEPLOY AWX Operator
     kubectl apply -k awx/
     ## WAIT for awx-operator become ready
     kubectl wait --namespace awx --for=condition=ready pod --selector=control-plane=controller-manager --timeout=5m
     sleep 60
-    # EDIT: kustomization file (add - awx.yaml)
+    ## EDIT: kustomization file (add - awx.yaml)
     cat <<EOF > awx/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -338,14 +334,15 @@ EOF
     ## DEPLOY AWX
     kubectl apply -k awx/
     ## WAIT for awx-operator become ready
-    ## WAIT FOR DATABASE MIRGATION FINISHED
-    sleep 1200 # about 20m on 3 cpu 8 ram
+    ## !!! WAIT FOR DATABASE MIRGATION FINISHED
+    sleep 1200 # about 20-30 m on 3 cpu 8 ram
     kubectl wait --namespace awx --for=condition=ready pod --selector=app.kubernetes.io/name=awx-web --timeout=1200s
     ## DEPLOY INGRESS
     ## (alternative to kubectl -n awx port-forward svc/awx-service --address 0.0.0.0 8080:80)
     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
     kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=180s
     sleep 60
+    ## create ingress rule
     cat <<-EOF > nginx-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -370,15 +367,14 @@ EOF
     kubectl describe ingress -n awx
     sleep 60
     ##check WEB locally
-    curl http://192.168.33.10/
+    curl http://192.168.33.10
     #
     curl https://192.168.33.10/ -k
+    echo "============="
     echo "WEB interface of AWX is available from the host machine"
     echo "http://192.168.33.10/"
     echo "OR"
     echo "https://192.168.33.10/"
-    # Get the password for the AWX admin user (default username is "admin") to log into the AWX web
-    # interface.
     echo "The password for the AWX admin user (default username is admin)"  
     kubectl get secret -n awx awx-admin-password -o jsonpath="{.data.password}" | base64 --decode; echo
     echo "FINISH"
@@ -386,8 +382,8 @@ EOF
     config.vm.provision "shell", inline: $script2, privileged: false
     ###
     ## ADDITIONAL NOTES:
-    ## kubectl config set-context --current --namespace=awx
-    ## after reboot - cluster auto starts (vs if use driver podmadn - then cluster does not auto start!)
+    ## kubectl config set-context --current --namespace=awx # for context defaults
+    ## after reboot - cluster auto starts (vs if use driver podman instead of docker - the cluster does not auto start!)
     ## after "kind delete cluster" - better delete all files at home (rm -rf ~/*) and reboot before starting new cluster
   ##SHELL 
 end
