@@ -106,14 +106,14 @@ EDIT Vagrantfile
 
 i.e. `notepad Vagrantfile`
 
-replace default content of **Vagrantfile** with text below:
+replace default content of **Vagrantfile** with text of [Vagrantfile](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/blob/main/Vagrantfile):
 
-(or instead of `init` and edit - just download [Vagrantfile](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/blob/main/Vagrantfile) from [repo](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10))
+(or instead of `init` and edit *Vagrantfile* - just download [Vagrantfile](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/blob/main/Vagrantfile) from [repo](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10))
 
-run: 
+and run: 
 `vagrant up`
 
-wait for finish provisioning (about 30-40 min on VM with 3 CPU cores and 8G RAM)
+wait for finish provisioning (about 30-40 min on VM with 2 CPU cores and 8G RAM)
 
 example result of ready AWX:
 
