@@ -124,3 +124,8 @@ example result of ready AWX:
 
 
 ---
+
+
+[example output of provisioning](/AWX_on_kind_OL8_VboxVagrant_win10_output_example.md)
+
+
