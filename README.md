@@ -1,9 +1,5 @@
-## Vagrantfile for deploy Ansible AWX on KIND Cluster with Docker at Oracle Linux (via Vagrant&Virtualbox on Windows host)
-
-###### [gist:](https://gist.github.com/v-mazur-intra/e3f2fbb7b473accfacd2e35bc2b0dc7c)
-
-## Deploy AWX on KIND Cluster with Docker at Oracle Linux
-### (via Vagrant&Virtualbox on Windows host)
+## Deploy Ansible AWX on KIND Cluster with Docker at Oracle Linux 8
+### (via Vagrant with Virtualbox on Windows 10 host)
 
 PREFACE:
 
@@ -39,44 +35,63 @@ REF: https://github.com/kurokobo/awx-on-k3s/tree/main
 
 embedded ingress Traefik
 
-(not full customizable; access only via hostname - req changes to C:\Windows\System32\drivers\etc\hosts )
+(not full customizable; access only via hostname - required changes to C:\Windows\System32\drivers\etc\hosts )
 
 - - -
 ADDIT INFO:
 
-installed K9s - perfect tool for control cluster
-![292921477-bb2b7006-aed6-4b63-8172-3f80ff3712e2](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/a4514573-f2ce-4a66-b134-58b78be27157)
+* installed K9s - perfect light CLI tool for control cluster
+
+![292921477-bb2b7006-aed6-4b63-8172-3f80ff3712e2](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/e076729a-f5ca-4b6a-b90c-9e044b8298f7)
 
 
-Vagrantfile language = Ruby; so convert TABs into spaces (i.e. Notepad++: Edit - Blank operations - TAB to Space)
-!!! A YAML file cannot contain tabs as indentation 
+alternatively - uncomment line in Vagrantfile `kind get kubeconfig > ~/.kube/config`
+
+and paste kubeconfig into [LENs](https://k8slens.dev/) 
+
+![292922824-dd0eec10-fec2-4d6d-8969-314140d34ed2](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/18a17a96-03c3-442d-b6b1-6020c8cab88a)
+
+
+or [Kubernetic](https://www.kubernetic.com/):
+
+![292922979-49ef48de-b8ab-4b6b-af55-4a029cd3e1a4](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/b9abd6ee-6ca8-4132-819a-d3f942b1c6ce)
+![292922837-fa726ab8-bdd5-4be1-b060-63b68feb5a88](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/66e8d900-d461-4828-a6c0-71e6c82bdac8)
+![292922839-8a1b8361-4d41-4630-8ab7-75a47a32341c](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/d305344d-0b37-4c07-8c42-b11150f2c69b)
+
+
+* Vagrantfile language = Ruby; when edit Vagrantfile - convert TABs into spaces (i.e. Notepad++: Edit - Blank operations - TAB to Space)
+
+> A YAML file cannot contain tabs as indentation 
 
 REF https://stackoverflow.com/a/19976827
 
 REF: https://yaml.org/faq.html 
 
+---
 
-ENV: win10, vagrant, virtualbox, oracle linux 8
+ENVIRONMENT: win10, vagrant, virtualbox, oracle linux 8
 
-VM: 2 LAN:
-
-* NAT Internet;
-
-* direct access static IP 192.168.33.10
+VM: 2 LANs for
+1. for NAT access to Internet;
+2. direct access to AWX via static IP 192.168.33.10
 
 - - - 
 
-TODO:
-remake to deploy via HELM
+_TODO:_
+_remake to deploy via HELM_
+
+---
 
 START
-on base host win10:
+
+in CMD of base host win10:
 
 ```
 mkdir awx
 cd awx
 ```
-VAGRANT UP:
+
+vagrant init:
 
 REF: https://yum.oracle.com/boxes/
 
@@ -88,6 +103,24 @@ REF: https://yum.oracle.com/boxes/
 # `vagrantup.com` for more information on using Vagrant.
 ```
 EDIT Vagrantfile
-and replace default content of **Vagrantfile** with text of latest ver of _Vagrantfile_ from [repo](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10))
+
+i.e. `notepad Vagrantfile`
+
+replace default content of **Vagrantfile** with text below:
+
+(or instead of `init` and edit - just download [Vagrantfile](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/blob/main/Vagrantfile) from [repo](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10))
+
+run: 
+`vagrant up`
+
+wait for finish provisioning (about 30-40 min on VM with 3 CPU cores and 8G RAM)
+
+example result of ready AWX:
+
+![292921773-790bd436-3b61-40ba-a752-632183d454ed](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/84bd4835-dfa2-44da-9d25-31a1789d2cc8)
+![292921787-2b1937a1-aae9-43e8-a78f-014066a03c7e](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/a2cf1740-ac7c-4d31-96d9-07da59c4673d)
+![292921801-6e2a5208-f115-43c5-a3e0-02a353b414cf](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/0265c573-f6e1-4caf-9983-abcdab8af571)
+![292921803-a5d0fdac-9124-451b-8ef6-01dafc885dc0](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/b02e3134-c2cf-484f-a1ee-83f9bf7bd44b)
 
 
+---
