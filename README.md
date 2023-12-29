@@ -45,6 +45,7 @@ embedded ingress Traefik
 ADDIT INFO:
 
 installed K9s - perfect tool for control cluster
+![292921477-bb2b7006-aed6-4b63-8172-3f80ff3712e2](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/assets/154795149/a4514573-f2ce-4a66-b134-58b78be27157)
 
 
 Vagrantfile language = Ruby; so convert TABs into spaces (i.e. Notepad++: Edit - Blank operations - TAB to Space)
