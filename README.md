@@ -124,8 +124,11 @@ example result of ready AWX:
 
 
 ---
+Additional:
+
+[Vagrantfile](https://github.com/v-mazur-intra/ansilbe_awx_on_vm_vagrant_file_win10/blob/main/linux/Vagrantfile) for linux (tested on Ubuntu 22.04 vagrant with virtualbox)
 
 
-[example output of provisioning](/AWX_on_kind_OL8_VboxVagrant_win10_output_example.md)
+[example output of provisioning on win10](/AWX_on_kind_OL8_VboxVagrant_win10_output_example.md)
 
 
